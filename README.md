@@ -70,6 +70,26 @@ Returns a flat row-major byte array of length `len_a × len_b`. Value `255` = ma
 - [ ] Self-compare mode (same sequence on both axes — great for finding internal repeats)
 - [ ] Web worker offload for sequences > ~50k bp
 
+## What can you actually learn from this?
+
+### Your maternal lineage haplogroup
+Mitochondrial DNA is inherited unchanged from your mother, her mother, and so on. There are ~26 major haplogroups (L, H, U, J...) defined by specific variant positions in chrM. If you download your 23andMe raw data, extract your chrM sequence, and compare it against the reference (NC_012920.1, included in `src/demo/`) — every break in the main diagonal is a personal variant. The *pattern* of breaks maps to your haplogroup. You'd be seeing your deep maternal ancestry as broken diagonals.
+
+### The D-loop — forensic DNA's favorite region
+Self-compare chrM against itself. The genome will produce a solid main diagonal, but the **D-loop** (positions ~16024–576, the "control region") contains hypervariable tandem repeats — you'd see a distinctive blocky cluster there. This region is also what forensic DNA testing uses.
+
+### Human vs Neanderthal — evolution as a visual
+We have the Neanderthal mitochondrial genome sequenced from ancient bones. Compare it to modern human chrM and you get a mostly solid diagonal (~98% similar) with scattered breaks — the density of breaks encodes evolutionary distance. We diverged from Neanderthal chrM ~500k years ago. Add chimp and you can immediately see it's further away.
+
+### Virus genome structure — SARS-CoV-2
+Compare the COVID-19 genome (~30k bp) to itself. Coronaviruses have a frameshifting pseudoknot and internal repeat elements that show up as off-diagonal lines — functional structures the virus uses to replicate. You're seeing genome architecture directly.
+
+### Ideas for making it more useful
+- Click a dot → show the two subsequences side by side with mismatches highlighted
+- Colored bands on axes marking known gene regions (D-loop, COX1, ND genes, etc.)
+- Export differing positions as a list → paste into a haplogroup lookup tool
+- Compare your 23andMe chrM extract to the reference for a personal "where do I differ" view
+
 ## Getting started
 
 ```bash
