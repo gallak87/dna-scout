@@ -1,46 +1,31 @@
 import { useEffect, useState } from 'react'
 import init, { compute_dotplot } from './wasm/pkg/dna_scout_wasm.js'
+import { DotPlot } from './components/DotPlot'
+
+const SEQ_A = 'ACGTACGTACGT'
+const SEQ_B = 'ACGTTTTTACGT'
+const WINDOW = 4
+const THRESHOLD = 3
 
 function App() {
-  const [result, setResult] = useState<string>('loading wasm...')
+  const [matrix, setMatrix] = useState<Uint8Array>(new Uint8Array())
 
   useEffect(() => {
-    async function smokeTest() {
-      await init()
-
-      const seqA = 'ACGTACGTACGT'
-      const seqB = 'ACGTTTTTACGT'
-      const window = 4
-      const threshold = 3
-
-      const matrix = compute_dotplot(seqA, seqB, window, threshold)
-
-      console.log('compute_dotplot output:', matrix)
-      console.log('length:', matrix.length, '(expected', seqA.length * seqB.length, ')')
-
-      // pretty-print as a grid
-      const rows = []
-      for (let i = 0; i < seqA.length; i++) {
-        let row = ''
-        for (let j = 0; j < seqB.length; j++) {
-          row += matrix[i * seqB.length + j] ? '█' : '·'
-        }
-        rows.push(row)
-      }
-
-      setResult(rows.join('\n'))
-    }
-
-    smokeTest().catch((e) => setResult(`error: ${e}`))
+    init().then(() => {
+      setMatrix(compute_dotplot(SEQ_A, SEQ_B, WINDOW, THRESHOLD))
+    })
   }, [])
 
   return (
-    <div style={{ fontFamily: 'monospace', padding: 32 }}>
-      <h2>dna-scout — WASM smoke test</h2>
-      <p>seqA: ACGTACGTACGT</p>
-      <p>seqB: ACGTTTTTACGT</p>
-      <p>window=4, threshold=3</p>
-      <pre style={{ fontSize: 20, lineHeight: 1.2 }}>{result}</pre>
+    <div style={{ fontFamily: 'monospace', padding: 32, display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <h2 style={{ margin: 0 }}>dna-scout</h2>
+      <div style={{ color: '#888', fontSize: 13 }}>
+        seqA: {SEQ_A} &nbsp;|&nbsp; seqB: {SEQ_B} &nbsp;|&nbsp; window={WINDOW} threshold={THRESHOLD}
+      </div>
+      {matrix.length > 0 && (
+        <DotPlot matrix={matrix} seqA={SEQ_A} seqB={SEQ_B} />
+      )}
+      <div style={{ color: '#555', fontSize: 12 }}>scroll to zoom · drag to pan · hover for details</div>
     </div>
   )
 }
